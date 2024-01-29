@@ -1,4 +1,4 @@
-import { SignedIn } from "@clerk/nextjs";
+import { UserButton, SignOutButton, SignedOut } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -15,8 +15,16 @@ function Topbar() {
     </Link>
 
     <div className="flex items-center gap-1">
+
        <div className="block md:hidden">
-            <SignedIn></SignedIn>
+          <UserButton></UserButton>
+    <SignOutButton> fdas</SignOutButton>
+
+            {isUserLogginIn ? (
+              <div></div>
+            ) : (
+              <div></div>
+            )}
        </div>
     </div>
 
