@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SignedIn, UserButton } from "@clerk/nextjs"
+import { OrganizationSwitcher, SignOutButton, SignedIn } from "@clerk/nextjs"
 
 function Topbar() {
 
@@ -15,20 +15,21 @@ function Topbar() {
     </Link>
 
     <div className="flex items-center gap-1">
-
        <div className="block md:hidden">
        <SignedIn>
-       <UserButton></UserButton>
+          <SignOutButton>
+            <div className="flex cursor-pointer">
+                <Image alt="logout" src="/assets/logout.svg" width={24} height={24}></Image>
+            </div>
+          </SignOutButton>
        </SignedIn>
-
-            {isUserLogginIn ? (
-              <div></div>
-            ) : (
-              <div></div>
-            )}
        </div>
+          <OrganizationSwitcher appearance={{
+          elements: {
+              organizationSwitcherTrigger: "py-2 px-4"
+          }
+          }} />
     </div>
-
   </nav>
   )
 }
