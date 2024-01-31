@@ -19,8 +19,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider>
+ 
     <html lang="en">
+         <ClerkProvider>
       <body className={inter.className}>
         <Topbar />
           <main>
@@ -34,7 +35,8 @@ export default function RootLayout({
           </main>
         <Bottombar />
       </body>
+      </ClerkProvider>
     </html>
-    </ClerkProvider>
+
   )
 }
