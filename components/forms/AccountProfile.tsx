@@ -17,7 +17,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { UserValidation } from '@/lib/validations/user';
 import * as z from 'zod';
 import Image from 'next/image';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useState } from 'react';
+import { isBase64Image } from '@/lib/utils';
+import { useUploadThing } from '@/lib/uploadthing';
 interface props {
   user: {
     id: string;
@@ -31,8 +33,9 @@ interface props {
 }
 
 const AccountProfile = ({ user, btnTitle }: props) => {
+  const [files] = useState<File[]>([]);
+  const { startUpload } = useUploadThing('media');
   console.log(btnTitle);
-  // const [files, setFiles] = useState<File[]>([]);
 
   const form = useForm({
     resolver: zodResolver(UserValidation),
@@ -67,11 +70,16 @@ const AccountProfile = ({ user, btnTitle }: props) => {
     }
   };
 
-  function onSubmit(values: z.infer<typeof UserValidation>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-  }
+  const onSubmit = async (values: z.infer<typeof UserValidation>) => {
+    const blob = values.profile_photo;
+    const hasImageChanged = isBase64Image(blob);
+    if (hasImageChanged) {
+      const imgRes = await startUpload(files);
+      if (imgRes && imgRes[0].fileUrl) {
+        values.profile_photo = imgRes[0].fileUrl;
+      }
+    }
+  };
 
   return (
     <Form {...form}>
