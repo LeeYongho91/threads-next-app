@@ -1,10 +1,15 @@
 'use client';
 
+import * as z from 'zod';
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
+import { usePathname, useRouter } from 'next/navigation';
+import { ChangeEvent, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import {
   Form,
   FormControl,
-  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -13,14 +18,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { UserValidation } from '@/lib/validations/user';
-import * as z from 'zod';
-import Image from 'next/image';
-import { ChangeEvent, useState } from 'react';
-import { isBase64Image } from '@/lib/utils';
+
 import { useUploadThing } from '@/lib/uploadthing';
-interface props {
+import { isBase64Image } from '@/lib/utils';
+
+import { UserValidation } from '@/lib/validations/user';
+import { updateUser } from '@/lib/actions/user.actions';
+
+interface Props {
   user: {
     id: string;
     objectId: string;
@@ -32,20 +37,50 @@ interface props {
   btnTitle: string;
 }
 
-const AccountProfile = ({ user, btnTitle }: props) => {
-  const [files] = useState<File[]>([]);
+const AccountProfile = ({ user, btnTitle }: Props) => {
+  const router = useRouter();
+  const pathname = usePathname();
   const { startUpload } = useUploadThing('media');
-  console.log(btnTitle);
 
-  const form = useForm({
+  const [files, setFiles] = useState<File[]>([]);
+
+  const form = useForm<z.infer<typeof UserValidation>>({
     resolver: zodResolver(UserValidation),
     defaultValues: {
-      profile_photo: user?.image || '',
-      name: user?.name || '',
-      username: user?.username || '',
-      bio: user?.bio || '',
+      profile_photo: user?.image ? user.image : '',
+      name: user?.name ? user.name : '',
+      username: user?.username ? user.username : '',
+      bio: user?.bio ? user.bio : '',
     },
   });
+
+  const onSubmit = async (values: z.infer<typeof UserValidation>) => {
+    const blob = values.profile_photo;
+
+    const hasImageChanged = isBase64Image(blob);
+    if (hasImageChanged) {
+      const imgRes = await startUpload(files);
+
+      if (imgRes && imgRes[0].fileUrl) {
+        values.profile_photo = imgRes[0].fileUrl;
+      }
+    }
+
+    await updateUser({
+      name: values.name,
+      path: pathname,
+      username: values.username,
+      userId: user.id,
+      bio: values.bio,
+      image: values.profile_photo,
+    });
+
+    if (pathname === '/profile/edit') {
+      router.back();
+    } else {
+      router.push('/');
+    }
+  };
 
   const handleImage = (
     e: ChangeEvent<HTMLInputElement>,
@@ -57,7 +92,7 @@ const AccountProfile = ({ user, btnTitle }: props) => {
 
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      // setFiles(Array.from(e.target.files));
+      setFiles(Array.from(e.target.files));
 
       if (!file.type.includes('image')) return;
 
@@ -70,22 +105,11 @@ const AccountProfile = ({ user, btnTitle }: props) => {
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof UserValidation>) => {
-    const blob = values.profile_photo;
-    const hasImageChanged = isBase64Image(blob);
-    if (hasImageChanged) {
-      const imgRes = await startUpload(files);
-      if (imgRes && imgRes[0].fileUrl) {
-        values.profile_photo = imgRes[0].fileUrl;
-      }
-    }
-  };
-
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col justify-start gap-10"
+        onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField
           control={form.control}
@@ -96,12 +120,12 @@ const AccountProfile = ({ user, btnTitle }: props) => {
                 {field.value ? (
                   <Image
                     src={field.value}
-                    alt="profile photo"
+                    alt="profile_icon"
                     width={96}
                     height={96}
                     priority
                     className="rounded-full object-contain"
-                  ></Image>
+                  />
                 ) : (
                   <Image
                     src="/assets/profile.svg"
@@ -124,6 +148,7 @@ const AccountProfile = ({ user, btnTitle }: props) => {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="name"
@@ -143,6 +168,7 @@ const AccountProfile = ({ user, btnTitle }: props) => {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="username"
@@ -162,6 +188,7 @@ const AccountProfile = ({ user, btnTitle }: props) => {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="bio"
@@ -181,7 +208,10 @@ const AccountProfile = ({ user, btnTitle }: props) => {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+
+        <Button type="submit" className="bg-primary-500">
+          {btnTitle}
+        </Button>
       </form>
     </Form>
   );

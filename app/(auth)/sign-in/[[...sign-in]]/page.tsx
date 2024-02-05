@@ -1,6 +1,6 @@
-import {SignIn} from '@clerk/nextjs';
+import { SignIn } from '@clerk/nextjs';
 function page() {
-  return <SignIn />
+  return <SignIn />;
 }
 
-export default page
+export default page;
