@@ -26,11 +26,7 @@ export default function RootLayout({
           <main className="flex flex-row">
             <LeftSidebar />
             <section className="main-container">
-              <div className="w-full max-w-4xl bg-sky-700 px-4 py-2 text-white hover:bg-sky-800 sm:px-8 sm:py-3">
-                {children}
-              </div>
-              <div className="w-full max-w-4xl bg-sky-700 px-4 py-2 text-white hover:bg-sky-800 sm:px-8 sm:py-3"></div>
-              <div className="w-full max-w-4xl  bg-sky-700 px-4 py-2  text-white hover:bg-sky-800 sm:px-8 sm:py-3"></div>
+              <div className="w-full max-w-4xl">{children}</div>
             </section>
             <RightSidebar />
           </main>
