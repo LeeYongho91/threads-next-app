@@ -34,6 +34,7 @@ const ThreadCard = ({
   community,
   createdAt,
   comments,
+  isComment,
 }: Props) => {
   console.log(id, currentUserId, parentId, comments, community, createdAt);
 
@@ -94,6 +95,14 @@ const ThreadCard = ({
                   className="cursor-pointer object-contain"
                 />
               </div>
+
+              {isComment && comments.length > 0 && (
+                <Link href={`/thread/${id}`}>
+                  <p className="mt-1 text-subtle-medium">
+                    {comments.length} replies
+                  </p>
+                </Link>
+              )}
             </div>
           </div>
         </div>
