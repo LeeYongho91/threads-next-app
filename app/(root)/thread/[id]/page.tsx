@@ -4,7 +4,7 @@ import { fetchUser } from '@/lib/actions/user.actions';
 import { currentUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
 import Comment from '@/components/forms/Comment';
-
+console.log(`test`);
 const page = async ({ params }: { params: { id: string } }) => {
   if (!params.id) return null;
 
