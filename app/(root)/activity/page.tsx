@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation';
 const Page = async () => {
   const user = await currentUser();
   if (!user) return null;
-  console.log(`test`);
+
   const userInfo = await fetchUser(user.id);
   if (!userInfo?.onboarded) redirect('/onboarding');
 
@@ -24,11 +24,17 @@ const Page = async () => {
                 <article className="activity-card">
                   <Image
                     src={activity.author.image}
-                    alt="Profile Picture"
+                    alt="user_logo"
                     width={20}
                     height={20}
                     className="rounded-full object-cover"
                   />
+                  <p className="!text-small-regular text-light-1">
+                    <span className="mr-1 text-primary-500">
+                      {activity.author.name}
+                    </span>
+                    replied to your thread
+                  </p>
                 </article>
               </Link>
             ))}

@@ -25,6 +25,9 @@
         "react/react-in-jsx-scope" : "off",
         "no-custom-classname" : "off",
         "react/prop-types" : "off",
-        "@typescript-eslint/no-explicit-any": "off"
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "no-unsafe-optional-chaining" : "off"
     }
 }
